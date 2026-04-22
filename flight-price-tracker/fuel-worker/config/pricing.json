@@ -1,0 +1,9 @@
+{
+  "brent_symbol": "BZ=F",
+  "mops_proxy_multiplier": 1.0,
+  "barrel_to_liters": 158.987,
+  "import_tax_vnd_per_liter": 0,
+  "environment_tax_vnd_per_liter": 1000,
+  "premium_vnd_per_liter": 1800,
+  "han_sgn_estimated_liters": 9800
+}

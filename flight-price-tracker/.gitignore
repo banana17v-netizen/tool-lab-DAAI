@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+
+raw_data/*
+!raw_data/.gitkeep
+
+fuel_data/*
+!fuel_data/.gitkeep

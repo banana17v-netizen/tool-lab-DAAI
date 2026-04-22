@@ -1,0 +1,74 @@
+services:
+  db-service:
+    image: postgres:16-alpine
+    container_name: flight-price-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flight_prices}
+      POSTGRES_USER: ${POSTGRES_USER:-tracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracker_password}
+      DASHBOARD_DB_USER: ${DASHBOARD_DB_USER:-dashboard_reader}
+      DASHBOARD_DB_PASSWORD: ${DASHBOARD_DB_PASSWORD:-dashboard_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tracker} -d ${POSTGRES_DB:-flight_prices}"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    restart: unless-stopped
+
+  scraper-service:
+    build:
+      context: ./scraper-worker
+      dockerfile: Dockerfile
+    container_name: flight-price-worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tracker}:${POSTGRES_PASSWORD:-tracker_password}@db-service:5432/${POSTGRES_DB:-flight_prices}
+      RAW_DATA_DIR: /app/raw_data
+    volumes:
+      - ./raw_data:/app/raw_data
+    depends_on:
+      db-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+  fuel-worker:
+    build:
+      context: ./fuel-worker
+      dockerfile: Dockerfile
+    container_name: flight-fuel-worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tracker}:${POSTGRES_PASSWORD:-tracker_password}@db-service:5432/${POSTGRES_DB:-flight_prices}
+      FUEL_DATA_DIR: /app/fuel_data
+    volumes:
+      - ./fuel_data:/app/fuel_data
+    depends_on:
+      db-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+  dashboard-service:
+    build:
+      context: ./dashboard-service
+      dockerfile: Dockerfile
+    container_name: flight-price-dashboard
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${DASHBOARD_DB_USER:-dashboard_reader}:${DASHBOARD_DB_PASSWORD:-dashboard_password}@db-service:5432/${POSTGRES_DB:-flight_prices}
+    depends_on:
+      db-service:
+        condition: service_healthy
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

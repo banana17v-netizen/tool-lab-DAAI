@@ -1,0 +1,12 @@
+[
+  {
+    "origin": "HAN",
+    "destination": "SGN",
+    "days_ahead": [7, 14, 30]
+  },
+  {
+    "origin": "SGN",
+    "destination": "DAD",
+    "days_ahead": [7, 14]
+  }
+]
