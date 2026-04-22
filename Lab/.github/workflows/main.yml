@@ -1,0 +1,35 @@
+name: Track oil prices hourly
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-tracker:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 1. Download source code
+        uses: actions/checkout@v4
+
+      - name: 2. Setting up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 3. Install yfinance
+        run: pip install yfinance
+
+      - name: 4. Run!
+        run: |
+          cd lab
+          python oil_price_tracker.py --once
+
+      - name: 5. Back data to github
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add lab/oil_price_history.csv
+          git commit -m "Bot update automation" || echo "nothing"
+          git push
