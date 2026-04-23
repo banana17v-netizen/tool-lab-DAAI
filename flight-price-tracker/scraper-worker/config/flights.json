@@ -2,11 +2,9 @@
   {
     "origin": "HAN",
     "destination": "SGN",
-    "days_ahead": [7, 14, 30]
-  },
-  {
-    "origin": "SGN",
-    "destination": "DAD",
-    "days_ahead": [7, 14]
+    "days_ahead": [0],
+    "trip_duration": 1,
+    "range_of_departure": 1,
+    "location": "VN"
   }
 ]

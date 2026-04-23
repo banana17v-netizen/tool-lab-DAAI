@@ -12,6 +12,9 @@ class RouteMonitor(BaseModel):
     origin: str
     destination: str
     days_ahead: list[int] = Field(min_length=1)
+    trip_duration: int = Field(default=4, gt=0)
+    range_of_departure: int = Field(default=62, gt=0)
+    location: str = "VN"
 
 
 class TicketPriceRecord(BaseModel):

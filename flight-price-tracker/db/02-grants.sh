@@ -2,13 +2,13 @@
 set -eu
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    DO $$
+    DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${DASHBOARD_DB_USER}') THEN
             EXECUTE format('CREATE ROLE %I WITH LOGIN PASSWORD %L', '${DASHBOARD_DB_USER}', '${DASHBOARD_DB_PASSWORD}');
         END IF;
     END
-    $$;
+    \$\$;
 
     GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO ${DASHBOARD_DB_USER};
     GRANT USAGE ON SCHEMA public TO ${DASHBOARD_DB_USER};

@@ -27,8 +27,14 @@ class PostgresStorage:
                 brent_price_usd,
                 exchange_rate,
                 jet_a1_est_vnd,
-                han_sgn_fuel_cost
-            ) VALUES ($1, $2, $3, $4, $5)
+                han_sgn_fuel_cost,
+                brent_source,
+                exchange_rate_source,
+                brent_price_timestamp,
+                exchange_rate_timestamp,
+                is_fallback,
+                source_note
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         """
 
         async with self.pool.acquire() as conn:
@@ -39,4 +45,10 @@ class PostgresStorage:
                 record.exchange_rate,
                 record.jet_a1_est_vnd,
                 record.han_sgn_fuel_cost,
+                record.brent_source,
+                record.exchange_rate_source,
+                record.brent_price_timestamp,
+                record.exchange_rate_timestamp,
+                record.is_fallback,
+                record.source_note,
             )

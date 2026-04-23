@@ -16,9 +16,23 @@ class FuelPricingConfig(BaseModel):
     han_sgn_estimated_liters: Decimal = Decimal("9800")
 
 
+class SourceQuote(BaseModel):
+    value: Decimal = Field(gt=0)
+    source: str = Field(min_length=1)
+    observed_at: datetime | None = None
+    is_fallback: bool = False
+    note: str | None = None
+
+
 class FuelMetricRecord(BaseModel):
     timestamp: datetime
     brent_price_usd: Decimal = Field(gt=0)
     exchange_rate: Decimal = Field(gt=0)
     jet_a1_est_vnd: Decimal = Field(gt=0)
     han_sgn_fuel_cost: Decimal = Field(gt=0)
+    brent_source: str = Field(min_length=1)
+    exchange_rate_source: str = Field(min_length=1)
+    brent_price_timestamp: datetime | None = None
+    exchange_rate_timestamp: datetime | None = None
+    is_fallback: bool = False
+    source_note: str | None = None

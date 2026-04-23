@@ -67,12 +67,20 @@ async def scheduler() -> None:
 
     logger.info("Worker started with %d routes, interval=%ss", len(settings.routes), settings.scrape_interval_seconds)
 
+    if "example.com" in settings.vna_api_url:
+        logger.warning(
+            "VNA_API_URL is still set to the placeholder endpoint. Update .env with the real API URL before expecting fare data."
+        )
+
     try:
         while True:
             started_at = datetime.now(timezone.utc)
             logger.info("Running scrape cycle at %s", started_at.isoformat())
             try:
-                await run_cycle(scraper, storage, lake_writer)
+                if "example.com" in settings.vna_api_url:
+                    logger.warning("Skipping scrape cycle because VNA_API_URL is still the example placeholder.")
+                else:
+                    await run_cycle(scraper, storage, lake_writer)
             except Exception as exc:
                 logger.exception("Cycle-level failure: %s", exc)
             await asyncio.sleep(settings.scrape_interval_seconds)
